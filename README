@@ -17,3 +17,5 @@ If there is no new rev in core repository use the last one, the core rev number 
 Example: Core Rev xxxx changes structure of the World DB we need to execute db only changes on this table in the right order, else we have execution errors.
 This makes more easy to use script to combine all updates to one file.
 
+
+~Approve on a commit means 'everything up to, and with this, commit, has been applied on the server' - Elyrion~
