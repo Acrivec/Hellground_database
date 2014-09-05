@@ -2,6 +2,7 @@ update gameobject set state = 0 where id = 187764;
 update gameobject_template set flags = 34 where entry in (187764, 187765);
 
 -- M'uru loot
+delete from creature_loot_template where entry = 25840;
 update creature_template set lootid = 25840 where entry = 25840;
 insert into creature_loot_template values
 (25840, 29434, 100, 0, 2, 2, 0, 0, 0),
@@ -10,6 +11,7 @@ insert into creature_loot_template values
 (25840, 35282, 0, 1, 1, 1, 0, 0, 0),
 (25840, 35283, 0, 1, 1, 1, 0, 0, 0),
 (25840, 35284, 0, 1, 1, 1, 0, 0, 0);
+delete from reference_loot_template where entry = 34095;
 insert into reference_loot_template values
 (34095, 34211, 0, 1, 1, 1, 0, 0, 0),
 (34095, 34212, 0, 1, 1, 1, 0, 0, 0),

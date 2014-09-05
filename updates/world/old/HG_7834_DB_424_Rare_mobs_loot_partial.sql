@@ -7,7 +7,7 @@ insert into creature_loot_template values
 (2452,6331,25,2,1,1,0,0,0),(2452,3011,75,2,1,1,0,0,0), -- Skhowl
 (2609,5742,45,2,1,1,0,0,0),(2609,5743,35,2,1,1,0,0,0), -- Geomancer Flintdagger
 (2603,5256,25,0,1,1,0,0,0),(2606,5257,11.1,2,1,1,0,0,0),(2606,2622,88.9,2,1,1,0,0,0), -- Kovork; Nimar the Slayer
-(2600,5180,25,2,1,1,0,0,0),(2600,5180,75,2,1,1,0,0,0); -- Singer
+(2600,5180,25,2,1,1,0,0,0),(2600,5181,75,2,1,1,0,0,0); -- Singer
 delete from reference_loot_template where item in
 (31256,31263,31264, -- Fenissa the assassin
 31268,31269,31270, -- Dr. Whitherlimb
