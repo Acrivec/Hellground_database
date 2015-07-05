@@ -1,0 +1,1 @@
+INSERT INTO `world`.`reference_loot_template` (`entry`, `item`, `ChanceOrQuestChance`, `groupid`, `mincountOrRef`, `maxcount`, `lootcondition`, `condition_value1`, `condition_value2`) VALUES ('50006', '30559', '0', '1', '1', '1', '0', '0', '0');
