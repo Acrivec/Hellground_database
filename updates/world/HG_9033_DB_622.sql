@@ -1,11 +1,17 @@
 -- Pyrewood village rework by Firehex and Sand.
 -- Now when event "Nights" start human npc despawn and appear worgens instead, some npc(in human form) sell items, added casts, remove elite status(was made around 2.4.0).
+SET @GUID := (SELECT MAX(guid) FROM creature);
+
 DELETE FROM game_event_creature WHERE event IN ('27','-27');
 -- Pyrewood Watcher http://wowhead.com/npc=1891 > http://wowhead.com/npc=1892  http://wowwiki.wikia.com/wiki/Moonrage_Watcher
 UPDATE `creature_template` SET `minhealth`='273', `maxhealth`='300',`rank`='0' WHERE entry IN (1891,1892);
 DELETE FROM creature WHERE id=1892;
-INSERT INTO creature (id,map,spawnMask,modelid,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType)
-SELECT 1892,map,spawnMask,574,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType FROM creature WHERE id=1891;
+
+INSERT INTO creature
+	(guid,id,map,spawnMask,modelid,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType)
+		SELECT @GUID,1892,map,spawnMask,574,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType 
+			FROM creature WHERE id=1891;
+	
 INSERT INTO game_event_creature (guid, event) SELECT guid, 27 FROM creature WHERE id=1892;
 INSERT INTO game_event_creature (guid, event) SELECT guid, '-27' FROM creature WHERE id=1891;
 DELETE FROM creature_ai_scripts WHERE entryOrGuid=1891;
@@ -14,8 +20,10 @@ UPDATE `creature_template` SET `AIName` = 'EventAI' WHERE `entry` = '1891';
 -- Pyrewood Elder http://wowhead.com/npc=1895 > http://wowhead.com/npc=1896 http://wowwiki.wikia.com/wiki/Moonrage_Elder
 UPDATE `creature_template` SET `minhealth`='276', `maxhealth`='301',`rank`='0',`AIName` = 'EventAI' WHERE entry IN (1895,1896);
 DELETE FROM creature WHERE id=1896;
-INSERT INTO creature (id,map,spawnMask,modelid,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType)
-SELECT 1896,map,spawnMask,729,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType FROM creature WHERE id=1895;
+INSERT INTO creature (guid,id,map,spawnMask,modelid,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType)
+	SELECT @GUID+1,1896,map,spawnMask,729,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType 
+		FROM creature WHERE id=1895;
+
 INSERT INTO game_event_creature (guid, event) SELECT guid, 27 FROM creature WHERE id=1896;
 INSERT INTO game_event_creature (guid, event) SELECT guid, '-27' FROM creature WHERE id=1895;
 DELETE FROM creature_ai_scripts WHERE entryOrGuid=1895;
@@ -25,8 +33,11 @@ INSERT INTO `creature_ai_scripts` VALUES ('189651', '1896', '0', '0', '100', '1'
 -- Pyrewood Sentry http://wowhead.com/npc=1894#abilities > http://wowhead.com/npc=1893  http://wowwiki.wikia.com/wiki/Moonrage_Sentry
 UPDATE `creature_template` SET `minhealth`='300', `maxhealth`='328',`rank`='0',`AIName` = 'EventAI' WHERE entry IN (1894,1893);
 DELETE FROM creature WHERE id=1893;
-INSERT INTO creature (id,map,spawnMask,modelid,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType)
-SELECT 1893,map,spawnMask,564,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType FROM creature WHERE id=1894;
+
+INSERT INTO creature (guid,id,map,spawnMask,modelid,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType)
+	SELECT @GUID+2,1893,map,spawnMask,564,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType 
+		FROM creature WHERE id=1894;
+		
 INSERT INTO game_event_creature (guid, event) SELECT guid, 27 FROM creature WHERE id=1893;
 INSERT INTO game_event_creature (guid, event) SELECT guid, '-27' FROM creature WHERE id=1894;
 DELETE FROM creature_ai_scripts WHERE entryOrGuid=1894;
@@ -39,8 +50,9 @@ INSERT INTO `creature_ai_scripts` VALUES ('189352', '1893', '0', '0', '100', '1'
 -- Pyrewood Armorer http://wowhead.com/npc=3528  > http://wowhead.com/npc=3529  http://wowwiki.wikia.com/wiki/Moonrage_Armorer
 UPDATE `creature_template` SET `minhealth`='328', `maxhealth`='356',`rank`='0' WHERE entry IN (3528,3529);
 DELETE FROM creature WHERE id=3529;
-INSERT INTO creature (id,map,spawnMask,modelid,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType)
-SELECT 3529,map,spawnMask,729,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType FROM creature WHERE id=3528;
+INSERT INTO creature (guid,id,map,spawnMask,modelid,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType)
+	SELECT @GUID+3,3529,map,spawnMask,729,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType 
+		FROM creature WHERE id=3528;
 INSERT INTO game_event_creature (guid, event) SELECT guid, 27 FROM creature WHERE id=3529;
 INSERT INTO game_event_creature (guid, event) SELECT guid, '-27' FROM creature WHERE id=3528;
 DELETE FROM npc_vendor WHERE entry= 3528;
@@ -56,8 +68,9 @@ DELETE FROM creature_loot_template WHERE item IN (847,848,849,850,1202,1845,1846
 -- Pyrewood Tailor http://wowhead.com/npc=3530 > http://wowhead.com/npc=3531  http://wowwiki.wikia.com/wiki/Moonrage_Tailor
 UPDATE `creature_template` SET `minhealth`='300', `maxhealth`='328',`rank`='0',`AIName` = 'EventAI' WHERE entry IN (3530,3531);
 DELETE FROM creature WHERE id=3531;
-INSERT INTO creature (id,map,spawnMask,modelid,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType)
-SELECT 3531,map,spawnMask,729,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType FROM creature WHERE id=3530;
+INSERT INTO creature (guid, id,map,spawnMask,modelid,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType)
+	SELECT @GUID+4,3531,map,spawnMask,729,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType 
+		FROM creature WHERE id=3530;
 INSERT INTO game_event_creature (guid, event) SELECT guid, 27 FROM creature WHERE id=3531;
 INSERT INTO game_event_creature (guid, event) SELECT guid, '-27' FROM creature WHERE id=3530;
 DELETE FROM creature_ai_scripts WHERE entryOrGuid=3530;
@@ -75,8 +88,9 @@ DELETE FROM creature_loot_template WHERE item IN (792,793,794,795,3602,3603);
 -- Pyrewood Leatherworker http://wowhead.com/npc=3532 >http://wowhead.com/npc=3533  http://wowwiki.wikia.com/wiki/Moonrage_Leatherworker
 UPDATE `creature_template` SET `minhealth`='300', `maxhealth`='328',`rank`='0' WHERE entry IN (3532,3533);
 DELETE FROM creature WHERE id=3533;
-INSERT INTO creature (id,map,spawnMask,modelid,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType)
-SELECT 3533,map,spawnMask,729,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType FROM creature WHERE id=3532;
+INSERT INTO creature (guid,id,map,spawnMask,modelid,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType)
+	SELECT @GUID+5,3533,map,spawnMask,729,equipment_id,position_x,position_y,position_z,orientation,spawntimesecs,spawndist,currentwaypoint,curhealth,curmana,DeathState,MovementType 
+		FROM creature WHERE id=3532;
 INSERT INTO game_event_creature (guid, event) SELECT guid, 27 FROM creature WHERE id=3533;
 INSERT INTO game_event_creature (guid, event) SELECT guid, '-27' FROM creature WHERE id=3532;
 DELETE FROM npc_vendor WHERE entry= 3532;
