@@ -3,15 +3,56 @@
 /*!40101 SET SQL_MODE=''*/;
 
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*Table structure for table `arena_fights` */
+
+DROP TABLE IF EXISTS `arena_fights`;
+
+CREATE TABLE `arena_fights` (
+  `fight_guid` int(10) unsigned NOT NULL,
+  `type` char(1) NOT NULL COMMENT '2, 3, 5',
+  `winners_id` int(10) unsigned NOT NULL,
+  `losers_id` int(10) unsigned NOT NULL,
+  `winners_rating` int(10) unsigned NOT NULL,
+  `losers_rating` int(10) unsigned NOT NULL,
+  `rating_change` int(10) unsigned NOT NULL,
+  `timestamp` datetime DEFAULT NULL,
+  `length` int(6) unsigned NOT NULL DEFAULT '0' COMMENT 'time in seconds',
+  PRIMARY KEY (`fight_guid`),
+  KEY `winners_id` (`winners_id`),
+  KEY `losers_id` (`losers_id`),
+  KEY `timestamp` (`timestamp`),
+  KEY `type` (`type`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Table structure for table `arena_fights_detailed` */
+
+DROP TABLE IF EXISTS `arena_fights_detailed`;
+
+CREATE TABLE `arena_fights_detailed` (
+  `fight_guid` int(10) unsigned NOT NULL,
+  `player_guid` int(10) unsigned NOT NULL,
+  `team_id` int(10) unsigned NOT NULL,
+  `damage_done` int(10) unsigned NOT NULL DEFAULT '0',
+  `healing_done` int(10) unsigned NOT NULL DEFAULT '0',
+  `kills` char(1) NOT NULL DEFAULT '0',
+  `personal_rating` int(10) unsigned NOT NULL,
+  `rating_change` int(11) NOT NULL,
+  PRIMARY KEY (`fight_guid`,`player_guid`),
+  KEY `player_guid` (`player_guid`),
+  KEY `team_id` (`team_id`),
+  KEY `fight_guid` (`fight_guid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 /*Table structure for table `arena_team` */
 
 DROP TABLE IF EXISTS `arena_team`;
 
 CREATE TABLE `arena_team` (
   `arenateamid` int(10) unsigned NOT NULL DEFAULT '0',
-  `name` char(255) NOT NULL,
+  `name` varchar(100) NOT NULL,
   `captainguid` int(10) unsigned NOT NULL DEFAULT '0',
   `type` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `BackgroundColor` int(10) unsigned NOT NULL DEFAULT '0',
@@ -21,8 +62,6 @@ CREATE TABLE `arena_team` (
   `BorderColor` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`arenateamid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `arena_team` */
 
 /*Table structure for table `arena_team_member` */
 
@@ -37,10 +76,9 @@ CREATE TABLE `arena_team_member` (
   `wons_season` int(10) unsigned NOT NULL DEFAULT '0',
   `personal_rating` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`arenateamid`,`guid`),
-  KEY `arenateamid` (`arenateamid`)
+  KEY `arenateamid` (`arenateamid`),
+  KEY `guid` (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `arena_team_member` */
 
 /*Table structure for table `arena_team_stats` */
 
@@ -56,8 +94,6 @@ CREATE TABLE `arena_team_stats` (
   `rank` int(10) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`arenateamid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `arena_team_stats` */
 
 /*Table structure for table `auctionhouse` */
 
@@ -77,10 +113,69 @@ CREATE TABLE `auctionhouse` (
   `lastbid` int(11) NOT NULL DEFAULT '0',
   `startbid` int(11) NOT NULL DEFAULT '0',
   `deposit` int(11) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `itemguid` (`itemguid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `auctionhouse` */
+/*Table structure for table `boss_fights` */
+
+DROP TABLE IF EXISTS `boss_fights`;
+
+CREATE TABLE `boss_fights` (
+  `kill_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `mob_id` int(5) unsigned NOT NULL,
+  `instance_id` int(5) unsigned NOT NULL,
+  `guild_id` int(5) unsigned zerofill DEFAULT NULL,
+  `length` int(5) unsigned NOT NULL,
+  `date` datetime NOT NULL,
+  PRIMARY KEY (`kill_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4382 DEFAULT CHARSET=utf8;
+
+/*Table structure for table `boss_fights_detailed` */
+
+DROP TABLE IF EXISTS `boss_fights_detailed`;
+
+CREATE TABLE `boss_fights_detailed` (
+  `kill_id` int(10) unsigned NOT NULL,
+  `player_guid` int(10) unsigned NOT NULL,
+  `damage` int(10) unsigned DEFAULT NULL,
+  `healing` int(10) unsigned DEFAULT NULL,
+  `deaths` int(2) unsigned DEFAULT NULL,
+  PRIMARY KEY (`kill_id`,`player_guid`),
+  KEY `player_guid` (`player_guid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Table structure for table `boss_fights_loot` */
+
+DROP TABLE IF EXISTS `boss_fights_loot`;
+
+CREATE TABLE `boss_fights_loot` (
+  `kill_id` int(10) unsigned NOT NULL,
+  `item_id` int(6) unsigned NOT NULL,
+  `count` int(2) DEFAULT NULL,
+  PRIMARY KEY (`kill_id`,`item_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Table structure for table `boss_id_locations` */
+
+DROP TABLE IF EXISTS `boss_id_locations`;
+
+CREATE TABLE `boss_id_locations` (
+  `boss_id` int(2) unsigned NOT NULL,
+  `boss_location` varchar(40) DEFAULT NULL,
+  PRIMARY KEY (`boss_id`),
+  CONSTRAINT `boss_id_locations_ibfk_1` FOREIGN KEY (`boss_id`) REFERENCES `boss_id_names` (`boss_id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+/*Table structure for table `boss_id_names` */
+
+DROP TABLE IF EXISTS `boss_id_names`;
+
+CREATE TABLE `boss_id_names` (
+  `boss_id` int(5) unsigned NOT NULL,
+  `boss_name` varchar(26) NOT NULL,
+  PRIMARY KEY (`boss_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Table structure for table `bugreport` */
 
@@ -92,8 +187,6 @@ CREATE TABLE `bugreport` (
   `content` varchar(255) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `bugreport` */
 
 /*Table structure for table `character_action` */
 
@@ -108,8 +201,6 @@ CREATE TABLE `character_action` (
   PRIMARY KEY (`guid`,`button`),
   KEY `guid` (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `character_action` */
 
 /*Table structure for table `character_aura` */
 
@@ -129,8 +220,6 @@ CREATE TABLE `character_aura` (
   KEY `guid` (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `character_aura` */
-
 /*Table structure for table `character_bgcoord` */
 
 DROP TABLE IF EXISTS `character_bgcoord`;
@@ -147,8 +236,6 @@ CREATE TABLE `character_bgcoord` (
   PRIMARY KEY (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `character_bgcoord` */
-
 /*Table structure for table `character_declinedname` */
 
 DROP TABLE IF EXISTS `character_declinedname`;
@@ -163,7 +250,16 @@ CREATE TABLE `character_declinedname` (
   PRIMARY KEY (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `character_declinedname` */
+/*Table structure for table `character_freerespecs` */
+
+DROP TABLE IF EXISTS `character_freerespecs`;
+
+CREATE TABLE `character_freerespecs` (
+  `guid` int(11) unsigned NOT NULL DEFAULT '0',
+  `expiration_date` int(11) unsigned NOT NULL DEFAULT '0',
+  KEY `guid` (`guid`),
+  KEY `expiration_date` (`expiration_date`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Table structure for table `character_gifts` */
 
@@ -177,8 +273,6 @@ CREATE TABLE `character_gifts` (
   PRIMARY KEY (`item_guid`),
   KEY `guid` (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `character_gifts` */
 
 /*Table structure for table `character_homebind` */
 
@@ -194,8 +288,6 @@ CREATE TABLE `character_homebind` (
   PRIMARY KEY (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `character_homebind` */
-
 /*Table structure for table `character_instance` */
 
 DROP TABLE IF EXISTS `character_instance`;
@@ -209,8 +301,6 @@ CREATE TABLE `character_instance` (
   KEY `guid` (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `character_instance` */
-
 /*Table structure for table `character_inventory` */
 
 DROP TABLE IF EXISTS `character_inventory`;
@@ -222,17 +312,16 @@ CREATE TABLE `character_inventory` (
   `item` int(11) unsigned NOT NULL DEFAULT '0',
   `item_template` int(11) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`item`),
-  KEY `guid` (`guid`)
+  KEY `guid` (`guid`),
+  KEY `item_template` (`item_template`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `character_inventory` */
 
 /*Table structure for table `character_pet` */
 
 DROP TABLE IF EXISTS `character_pet`;
 
 CREATE TABLE `character_pet` (
-  `id` int(11) unsigned NOT NULL DEFAULT '0',
+  `id` int(11) unsigned NOT NULL,
   `entry` int(11) unsigned NOT NULL DEFAULT '0',
   `owner` int(11) unsigned NOT NULL DEFAULT '0',
   `modelid` int(11) unsigned DEFAULT '0',
@@ -259,8 +348,6 @@ CREATE TABLE `character_pet` (
   KEY `owner` (`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `character_pet` */
-
 /*Table structure for table `character_pet_declinedname` */
 
 DROP TABLE IF EXISTS `character_pet_declinedname`;
@@ -276,8 +363,6 @@ CREATE TABLE `character_pet_declinedname` (
   PRIMARY KEY (`id`),
   KEY `owner` (`owner`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `character_pet_declinedname` */
 
 /*Table structure for table `character_queststatus` */
 
@@ -301,8 +386,6 @@ CREATE TABLE `character_queststatus` (
   PRIMARY KEY (`guid`,`quest`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `character_queststatus` */
-
 /*Table structure for table `character_queststatus_daily` */
 
 DROP TABLE IF EXISTS `character_queststatus_daily`;
@@ -315,8 +398,6 @@ CREATE TABLE `character_queststatus_daily` (
   KEY `guid` (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `character_queststatus_daily` */
-
 /*Table structure for table `character_reputation` */
 
 DROP TABLE IF EXISTS `character_reputation`;
@@ -328,8 +409,6 @@ CREATE TABLE `character_reputation` (
   `flags` bigint(10) DEFAULT NULL,
   PRIMARY KEY (`guid`,`faction`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `character_reputation` */
 
 /*Table structure for table `character_social` */
 
@@ -347,8 +426,6 @@ CREATE TABLE `character_social` (
   KEY `friend_flags` (`friend`,`flags`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `character_social` */
-
 /*Table structure for table `character_spell` */
 
 DROP TABLE IF EXISTS `character_spell`;
@@ -362,8 +439,6 @@ CREATE TABLE `character_spell` (
   PRIMARY KEY (`guid`,`spell`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `character_spell` */
-
 /*Table structure for table `character_spell_cooldown` */
 
 DROP TABLE IF EXISTS `character_spell_cooldown`;
@@ -376,8 +451,6 @@ CREATE TABLE `character_spell_cooldown` (
   PRIMARY KEY (`guid`,`spell`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `character_spell_cooldown` */
-
 /*Table structure for table `character_stats_ro` */
 
 DROP TABLE IF EXISTS `character_stats_ro`;
@@ -385,12 +458,11 @@ DROP TABLE IF EXISTS `character_stats_ro`;
 CREATE TABLE `character_stats_ro` (
   `guid` bigint(8) unsigned NOT NULL,
   `honor` bigint(8) unsigned NOT NULL,
-  `honorablekills` bit(8) NOT NULL,
+  `honorablekills` bigint(8) unsigned NOT NULL,
   `dailyarenawins` smallint(5) unsigned DEFAULT '0',
-  PRIMARY KEY (`guid`)
+  PRIMARY KEY (`guid`),
+  KEY `honorablekills` (`honorablekills`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `character_stats_ro` */
 
 /*Table structure for table `character_tutorial` */
 
@@ -410,8 +482,6 @@ CREATE TABLE `character_tutorial` (
   PRIMARY KEY (`account`,`realmid`),
   KEY `account` (`account`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `character_tutorial` */
 
 /*Table structure for table `characters` */
 
@@ -467,10 +537,20 @@ CREATE TABLE `characters` (
   PRIMARY KEY (`guid`),
   KEY `account` (`account`),
   KEY `online` (`online`),
-  KEY `name` (`name`)
+  KEY `name` (`name`),
+  FULLTEXT KEY `name_2` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `characters` */
+/*Table structure for table `characters_goldsy` */
+
+DROP TABLE IF EXISTS `characters_goldsy`;
+
+CREATE TABLE `characters_goldsy` (
+  `guid` int(11) unsigned NOT NULL DEFAULT '0',
+  `account` int(11) unsigned NOT NULL DEFAULT '0',
+  `name` varchar(12) NOT NULL DEFAULT '',
+  `money` int(10) unsigned NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 /*Table structure for table `corpse` */
 
@@ -494,8 +574,6 @@ CREATE TABLE `corpse` (
   KEY `instance` (`instance`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `corpse` */
-
 /*Table structure for table `creature_respawn` */
 
 DROP TABLE IF EXISTS `creature_respawn`;
@@ -505,10 +583,20 @@ CREATE TABLE `creature_respawn` (
   `respawntime` bigint(20) NOT NULL DEFAULT '0',
   `instance` mediumint(8) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`guid`,`instance`),
-  KEY `instance` (`instance`)
+  KEY `instance` (`instance`),
+  KEY `guid` (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
 
-/*Data for the table `creature_respawn` */
+/*Table structure for table `custom_transmogrification` */
+
+DROP TABLE IF EXISTS `custom_transmogrification`;
+
+CREATE TABLE `custom_transmogrification` (
+  `GUID` int(10) unsigned NOT NULL COMMENT 'Item guidLow',
+  `FakeEntry` int(10) unsigned NOT NULL COMMENT 'Item entry',
+  `Owner` int(10) unsigned NOT NULL COMMENT 'Player guidLow',
+  PRIMARY KEY (`GUID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='version 4.0';
 
 /*Table structure for table `deleted_chars` */
 
@@ -521,9 +609,7 @@ CREATE TABLE `deleted_chars` (
   `acc` int(11) NOT NULL,
   `date` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `deleted_chars` */
+) ENGINE=InnoDB AUTO_INCREMENT=14466 DEFAULT CHARSET=utf8;
 
 /*Table structure for table `game_event_condition_save` */
 
@@ -536,8 +622,6 @@ CREATE TABLE `game_event_condition_save` (
   PRIMARY KEY (`event_id`,`condition_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `game_event_condition_save` */
-
 /*Table structure for table `game_event_save` */
 
 DROP TABLE IF EXISTS `game_event_save`;
@@ -548,8 +632,6 @@ CREATE TABLE `game_event_save` (
   `next_start` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`event_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `game_event_save` */
 
 /*Table structure for table `gameobject_respawn` */
 
@@ -562,8 +644,6 @@ CREATE TABLE `gameobject_respawn` (
   PRIMARY KEY (`guid`,`instance`),
   KEY `instance` (`instance`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
-
-/*Data for the table `gameobject_respawn` */
 
 /*Table structure for table `gm_tickets` */
 
@@ -586,8 +666,6 @@ CREATE TABLE `gm_tickets` (
   PRIMARY KEY (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `gm_tickets` */
-
 /*Table structure for table `group_instance` */
 
 DROP TABLE IF EXISTS `group_instance`;
@@ -600,8 +678,6 @@ CREATE TABLE `group_instance` (
   KEY `instance` (`instance`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `group_instance` */
-
 /*Table structure for table `group_member` */
 
 DROP TABLE IF EXISTS `group_member`;
@@ -612,10 +688,9 @@ CREATE TABLE `group_member` (
   `assistant` tinyint(1) unsigned NOT NULL,
   `subgroup` smallint(6) unsigned NOT NULL,
   PRIMARY KEY (`leaderGuid`,`memberGuid`),
-  KEY `memberGuid` (`memberGuid`)
+  KEY `memberGuid` (`memberGuid`),
+  KEY `leaderGuid` (`leaderGuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `group_member` */
 
 /*Table structure for table `group_saved_loot` */
 
@@ -631,10 +706,10 @@ CREATE TABLE `group_saved_loot` (
   `position_y` float DEFAULT NULL,
   `position_z` float DEFAULT NULL,
   `playerGuids` varchar(1024) DEFAULT NULL,
-  PRIMARY KEY (`creatureId`,`instanceId`,`itemId`)
+  PRIMARY KEY (`creatureId`,`instanceId`,`itemId`),
+  KEY `summoned` (`summoned`),
+  KEY `creatureId` (`creatureId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `group_saved_loot` */
 
 /*Table structure for table `groups` */
 
@@ -660,8 +735,6 @@ CREATE TABLE `groups` (
   PRIMARY KEY (`leaderGuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `groups` */
-
 /*Table structure for table `guild` */
 
 DROP TABLE IF EXISTS `guild`;
@@ -683,8 +756,6 @@ CREATE TABLE `guild` (
   PRIMARY KEY (`guildid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `guild` */
-
 /*Table structure for table `guild_announce_cooldown` */
 
 DROP TABLE IF EXISTS `guild_announce_cooldown`;
@@ -693,8 +764,6 @@ CREATE TABLE `guild_announce_cooldown` (
   `guild_id` int(10) unsigned NOT NULL,
   `cooldown_end` bigint(20) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `guild_announce_cooldown` */
 
 /*Table structure for table `guild_bank_eventlog` */
 
@@ -712,10 +781,9 @@ CREATE TABLE `guild_bank_eventlog` (
   `TimeStamp` bigint(20) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`guildid`,`LogGuid`),
   KEY `PlayerGuid` (`PlayerGuid`),
-  KEY `LogGuid` (`LogGuid`)
+  KEY `LogGuid` (`LogGuid`),
+  KEY `TimeStamp` (`TimeStamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `guild_bank_eventlog` */
 
 /*Table structure for table `guild_bank_item` */
 
@@ -732,8 +800,6 @@ CREATE TABLE `guild_bank_item` (
   KEY `item_guid` (`item_guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `guild_bank_item` */
-
 /*Table structure for table `guild_bank_right` */
 
 DROP TABLE IF EXISTS `guild_bank_right`;
@@ -748,8 +814,6 @@ CREATE TABLE `guild_bank_right` (
   KEY `guildid` (`guildid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `guild_bank_right` */
-
 /*Table structure for table `guild_bank_tab` */
 
 DROP TABLE IF EXISTS `guild_bank_tab`;
@@ -763,8 +827,6 @@ CREATE TABLE `guild_bank_tab` (
   PRIMARY KEY (`guildid`,`TabId`),
   KEY `guildid` (`guildid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `guild_bank_tab` */
 
 /*Table structure for table `guild_eventlog` */
 
@@ -781,10 +843,9 @@ CREATE TABLE `guild_eventlog` (
   PRIMARY KEY (`guildid`,`LogGuid`),
   KEY `PlayerGuid1` (`PlayerGuid1`),
   KEY `PlayerGuid2` (`PlayerGuid2`),
-  KEY `LogGuid` (`LogGuid`)
+  KEY `LogGuid` (`LogGuid`),
+  KEY `TimeStamp` (`TimeStamp`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `guild_eventlog` */
 
 /*Table structure for table `guild_member` */
 
@@ -815,8 +876,6 @@ CREATE TABLE `guild_member` (
   KEY `guildid_rank` (`guildid`,`rank`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `guild_member` */
-
 /*Table structure for table `guild_rank` */
 
 DROP TABLE IF EXISTS `guild_rank`;
@@ -831,8 +890,6 @@ CREATE TABLE `guild_rank` (
   KEY `rid` (`rid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `guild_rank` */
-
 /*Table structure for table `hidden_rating` */
 
 DROP TABLE IF EXISTS `hidden_rating`;
@@ -844,8 +901,6 @@ CREATE TABLE `hidden_rating` (
   `rating5` int(10) unsigned NOT NULL DEFAULT '1500',
   PRIMARY KEY (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `hidden_rating` */
 
 /*Table structure for table `instance` */
 
@@ -862,8 +917,6 @@ CREATE TABLE `instance` (
   KEY `resettime` (`resettime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `instance` */
-
 /*Table structure for table `instance_reset` */
 
 DROP TABLE IF EXISTS `instance_reset`;
@@ -873,8 +926,6 @@ CREATE TABLE `instance_reset` (
   `resettime` bigint(40) NOT NULL DEFAULT '0',
   PRIMARY KEY (`mapid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `instance_reset` */
 
 /*Table structure for table `item_instance` */
 
@@ -888,8 +939,6 @@ CREATE TABLE `item_instance` (
   KEY `owner_guid` (`owner_guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `item_instance` */
-
 /*Table structure for table `item_text` */
 
 DROP TABLE IF EXISTS `item_text`;
@@ -899,8 +948,6 @@ CREATE TABLE `item_text` (
   `text` longtext,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `item_text` */
 
 /*Table structure for table `mail` */
 
@@ -922,10 +969,10 @@ CREATE TABLE `mail` (
   `cod` int(11) unsigned NOT NULL DEFAULT '0',
   `checked` tinyint(3) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
-  KEY `receiver` (`receiver`)
+  KEY `receiver` (`receiver`),
+  KEY `expire_time` (`expire_time`),
+  KEY `deliver_time` (`deliver_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `mail` */
 
 /*Table structure for table `mail_external` */
 
@@ -939,10 +986,9 @@ CREATE TABLE `mail_external` (
   `money` bigint(20) unsigned NOT NULL DEFAULT '0',
   `item` bigint(20) unsigned NOT NULL DEFAULT '0',
   `item_count` bigint(20) unsigned NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `receiver` (`receiver`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `mail_external` */
 
 /*Table structure for table `mail_items` */
 
@@ -957,8 +1003,6 @@ CREATE TABLE `mail_items` (
   KEY `receiver` (`receiver`),
   KEY `idx_mail_id` (`mail_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `mail_items` */
 
 /*Table structure for table `map_template` */
 
@@ -976,76 +1020,75 @@ CREATE TABLE `map_template` (
 
 /*Data for the table `map_template` */
 
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (0,100,0,6,2500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (1,100,0,6,2500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (13,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (25,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (29,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (30,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (33,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (34,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (36,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (43,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (47,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (48,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (70,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (90,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (109,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (129,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (169,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (189,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (209,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (229,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (230,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (249,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (269,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (289,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (309,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (329,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (349,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (369,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (389,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (409,300,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (429,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (449,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (450,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (451,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (469,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (489,250,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (509,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (529,150,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (530,100,0,6,2500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (531,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (532,130,3,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (533,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (534,380,3,6,2000,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (540,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (542,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (543,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (544,160,1,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (545,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (546,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (547,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (548,160,3,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (550,255,3,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (552,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (553,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (554,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (555,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (556,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (557,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (558,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (559,250,6,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (560,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (562,250,6,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (564,250,3,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (565,160,3,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (566,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (568,160,3,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (572,250,6,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (580,400,3,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (585,160,2,6,1500,10);
-insert  into `map_template`(`entry`,`visibility`,`pathfinding`,`lineofsight`,`ainotifyperiod`,`viewupdatedistance`) values (598,160,2,6,1500,10);
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('0','110','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('1','110','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('13','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('25','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('29','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('33','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('34','120','6','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('36','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('43','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('47','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('48','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('70','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('90','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('109','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('129','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('169','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('189','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('209','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('229','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('230','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('249','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('269','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('289','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('309','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('329','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('349','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('369','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('389','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('409','200','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('429','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('449','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('450','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('451','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('489','250','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('509','120','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('530','100','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('531','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('532','130','3','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('533','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('534','380','3','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('540','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('542','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('543','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('544','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('545','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('546','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('547','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('548','160','3','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('550','200','3','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('552','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('553','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('554','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('555','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('556','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('557','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('558','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('559','250','6','6','500','1');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('560','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('562','250','6','6','500','1');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('564','250','3','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('565','160','3','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('566','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('568','160','3','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('572','250','6','6','500','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('580','200','6','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('585','160','2','6','1000','5');
+insert into `map_template` (`entry`, `visibility`, `pathfinding`, `lineofsight`, `ainotifyperiod`, `viewupdatedistance`) values('598','160','2','6','1000','5');
+
+
 
 /*Table structure for table `opcodes_cooldown` */
 
@@ -1059,8 +1102,15 @@ CREATE TABLE `opcodes_cooldown` (
 
 /*Data for the table `opcodes_cooldown` */
 
-insert  into `opcodes_cooldown`(`opcode`,`cooldown`) values ('CMSG_INSPECT',1000);
-insert  into `opcodes_cooldown`(`opcode`,`cooldown`) values ('CMSG_WHOIS',1000);
+insert into `opcodes_cooldown` (`opcode`, `cooldown`) values('CMSG_ADD_FRIEND   ','1000');
+insert into `opcodes_cooldown` (`opcode`, `cooldown`) values('CMSG_CHANNEL_LIST','1000');
+insert into `opcodes_cooldown` (`opcode`, `cooldown`) values('CMSG_GAMEOBJ_USE','500');
+insert into `opcodes_cooldown` (`opcode`, `cooldown`) values('CMSG_GROUP_CHANGE_SU','1000');
+insert into `opcodes_cooldown` (`opcode`, `cooldown`) values('CMSG_GROUP_INVITE   ','1000');
+insert into `opcodes_cooldown` (`opcode`, `cooldown`) values('CMSG_GUILD_BANK_SWAP','1000');
+insert into `opcodes_cooldown` (`opcode`, `cooldown`) values('CMSG_INSPECT','2000');
+insert into `opcodes_cooldown` (`opcode`, `cooldown`) values('CMSG_WHO','2000');
+insert into `opcodes_cooldown` (`opcode`, `cooldown`) values('CMSG_WHOIS','1000');
 
 /*Table structure for table `pet_aura` */
 
@@ -1079,8 +1129,6 @@ CREATE TABLE `pet_aura` (
   PRIMARY KEY (`guid`,`spell`,`effect_index`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `pet_aura` */
-
 /*Table structure for table `pet_spell` */
 
 DROP TABLE IF EXISTS `pet_spell`;
@@ -1093,8 +1141,6 @@ CREATE TABLE `pet_spell` (
   PRIMARY KEY (`guid`,`spell`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `pet_spell` */
-
 /*Table structure for table `pet_spell_cooldown` */
 
 DROP TABLE IF EXISTS `pet_spell_cooldown`;
@@ -1105,8 +1151,6 @@ CREATE TABLE `pet_spell_cooldown` (
   `time` bigint(20) unsigned NOT NULL DEFAULT '0',
   PRIMARY KEY (`guid`,`spell`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `pet_spell_cooldown` */
 
 /*Table structure for table `petition` */
 
@@ -1121,8 +1165,6 @@ CREATE TABLE `petition` (
   UNIQUE KEY `ownerguid_petitionguid` (`ownerguid`,`petitionguid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `petition` */
-
 /*Table structure for table `petition_sign` */
 
 DROP TABLE IF EXISTS `petition_sign`;
@@ -1136,7 +1178,14 @@ CREATE TABLE `petition_sign` (
   PRIMARY KEY (`petitionguid`,`playerguid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-/*Data for the table `petition_sign` */
+/*Table structure for table `premium` */
+
+DROP TABLE IF EXISTS `premium`;
+
+CREATE TABLE `premium` (
+  `AccountId` int(11) unsigned NOT NULL,
+  `active` int(11) unsigned NOT NULL DEFAULT '1'
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 /*Table structure for table `reserved_name` */
 
@@ -1146,8 +1195,6 @@ CREATE TABLE `reserved_name` (
   `name` varchar(12) NOT NULL DEFAULT '',
   PRIMARY KEY (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='Player Reserved Names';
-
-/*Data for the table `reserved_name` */
 
 /*Table structure for table `saved_variables` */
 
@@ -1162,8 +1209,6 @@ CREATE TABLE `saved_variables` (
   `PVPAlliance` int(5) unsigned NOT NULL DEFAULT '0',
   `PVPHorde` int(5) unsigned NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-/*Data for the table `saved_variables` */
 
 /*Table structure for table `spell_disabled` */
 
@@ -1181,6 +1226,32 @@ CREATE TABLE `spell_disabled` (
 insert  into `spell_disabled`(`entry`,`disable_mask`,`comment`) values (1852,7,'Silenced (GM Tool) Spell bugged');
 insert  into `spell_disabled`(`entry`,`disable_mask`,`comment`) values (46642,7,'5k gold');
 
+/*Table structure for table `ticket_history` */
+
+DROP TABLE IF EXISTS `ticket_history`;
+
+CREATE TABLE `ticket_history` (
+  `guid` int(10) NOT NULL AUTO_INCREMENT,
+  `playerGuid` int(11) unsigned NOT NULL DEFAULT '0',
+  `name` varchar(15) NOT NULL,
+  `message` text NOT NULL,
+  `createtime` int(10) NOT NULL,
+  `timestamp` int(10) NOT NULL DEFAULT '0',
+  `closed` int(10) NOT NULL DEFAULT '0',
+  `comment` text NOT NULL,
+  PRIMARY KEY (`guid`)
+) ENGINE=InnoDB AUTO_INCREMENT=63324 DEFAULT CHARSET=utf8;
+
+/*Table structure for table `titles_to_award` */
+
+DROP TABLE IF EXISTS `titles_to_award`;
+
+CREATE TABLE `titles_to_award` (
+  `guid` int(10) unsigned NOT NULL,
+  `mask` int(14) unsigned NOT NULL,
+  PRIMARY KEY (`guid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 /*Table structure for table `uptime` */
 
 DROP TABLE IF EXISTS `uptime`;
@@ -1193,7 +1264,48 @@ CREATE TABLE `uptime` (
   PRIMARY KEY (`starttime`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='Uptime system';
 
-/*Data for the table `uptime` */
+/* Trigger structure for table `characters` */
+
+DELIMITER $$
+
+/*!50003 DROP TRIGGER*//*!50032 IF EXISTS */ /*!50003 `accchange_upd_check` */$$
+
+/*!50003 CREATE */ /*!50017 DEFINER = 'root'@'localhost' */ /*!50003 TRIGGER `accchange_upd_check` BEFORE UPDATE ON `characters` FOR EACH ROW BEGIN
+	IF NEW.account != OLD.account THEN
+		INSERT INTO realm.accchange_log VALUES ('XXX', OLD.account, NEW.account, NOW(), NEW.guid);
+	END IF;
+  END */$$
+
+
+DELIMITER ;
+
+/* Trigger structure for table `gm_tickets` */
+
+DELIMITER $$
+
+/*!50003 DROP TRIGGER*//*!50032 IF EXISTS */ /*!50003 `ticket_insert_check` */$$
+
+/*!50003 CREATE */ /*!50017 DEFINER = 'root'@'localhost' */ /*!50003 TRIGGER `ticket_insert_check` BEFORE INSERT ON `gm_tickets` FOR EACH ROW BEGIN
+    INSERT INTO ticket_history VALUES ('XXX', NEW.playerGuid, NEW.name, NEW.message, NEW.createtime, NEW.timestamp, NEW.closed, NEW.comment);
+  END */$$
+
+
+DELIMITER ;
+
+/* Trigger structure for table `gm_tickets` */
+
+DELIMITER $$
+
+/*!50003 DROP TRIGGER*//*!50032 IF EXISTS */ /*!50003 `ticket_upd_check` */$$
+
+/*!50003 CREATE */ /*!50017 DEFINER = 'root'@'localhost' */ /*!50003 TRIGGER `ticket_upd_check` BEFORE UPDATE ON `gm_tickets` FOR EACH ROW BEGIN
+    UPDATE ticket_history
+    SET message = NEW.message, name = NEW.name, timestamp = NEW.timestamp, closed = NEW.closed, comment = NEW.comment
+    WHERE playerGuid = NEW.playerGuid AND createtime = NEW.createtime;
+  END */$$
+
+
+DELIMITER ;
 
 /* Procedure structure for procedure `PreventCharDelete` */
 
@@ -1212,6 +1324,134 @@ BEGIN
 END */$$
 DELIMITER ;
 
+/*Table structure for table `arena_fights_detailed_view` */
+
+DROP TABLE IF EXISTS `arena_fights_detailed_view`;
+
+/*!50001 DROP VIEW IF EXISTS `arena_fights_detailed_view` */;
+/*!50001 DROP TABLE IF EXISTS `arena_fights_detailed_view` */;
+
+/*!50001 CREATE TABLE  `arena_fights_detailed_view`(
+ `fight_guid` int(10) unsigned ,
+ `type` char(1) ,
+ `nick` varchar(12) ,
+ `arena_team_name` varchar(100) ,
+ `team_id` int(10) unsigned ,
+ `damage_done` int(10) unsigned ,
+ `healing_done` int(10) unsigned ,
+ `kills` char(1) ,
+ `personal_rating` int(10) unsigned ,
+ `rating_change` int(11) ,
+ `timestamp` datetime ,
+ `length` int(6) unsigned 
+)*/;
+
+/*Table structure for table `arena_fights_view` */
+
+DROP TABLE IF EXISTS `arena_fights_view`;
+
+/*!50001 DROP VIEW IF EXISTS `arena_fights_view` */;
+/*!50001 DROP TABLE IF EXISTS `arena_fights_view` */;
+
+/*!50001 CREATE TABLE  `arena_fights_view`(
+ `fight_guid` int(10) unsigned ,
+ `type` char(1) ,
+ `winners_name` varchar(100) ,
+ `winners_id` int(10) unsigned ,
+ `winners_rating` int(10) unsigned ,
+ `losers_name` varchar(100) ,
+ `losers_id` int(10) unsigned ,
+ `losers_rating` int(10) unsigned ,
+ `rating_change` int(10) unsigned ,
+ `timestamp` datetime ,
+ `length` int(6) unsigned 
+)*/;
+
+/*Table structure for table `boss_fights_detailed_view` */
+
+DROP TABLE IF EXISTS `boss_fights_detailed_view`;
+
+/*!50001 DROP VIEW IF EXISTS `boss_fights_detailed_view` */;
+/*!50001 DROP TABLE IF EXISTS `boss_fights_detailed_view` */;
+
+/*!50001 CREATE TABLE  `boss_fights_detailed_view`(
+ `kill_id` int(10) unsigned ,
+ `player_name` varchar(12) ,
+ `player_guid` int(10) unsigned ,
+ `healing` int(10) unsigned ,
+ `damage` int(10) unsigned ,
+ `deaths` int(2) unsigned 
+)*/;
+
+/*Table structure for table `boss_fights_loot_view` */
+
+DROP TABLE IF EXISTS `boss_fights_loot_view`;
+
+/*!50001 DROP VIEW IF EXISTS `boss_fights_loot_view` */;
+/*!50001 DROP TABLE IF EXISTS `boss_fights_loot_view` */;
+
+/*!50001 CREATE TABLE  `boss_fights_loot_view`(
+ `kill_id` int(10) unsigned ,
+ `item_id` int(6) unsigned ,
+ `name` varchar(255) ,
+ `count` int(2) 
+)*/;
+
+/*Table structure for table `boss_fights_view` */
+
+DROP TABLE IF EXISTS `boss_fights_view`;
+
+/*!50001 DROP VIEW IF EXISTS `boss_fights_view` */;
+/*!50001 DROP TABLE IF EXISTS `boss_fights_view` */;
+
+/*!50001 CREATE TABLE  `boss_fights_view`(
+ `kill_id` int(10) unsigned ,
+ `boss_name` varchar(26) ,
+ `mob_id` int(5) unsigned ,
+ `location` varchar(40) ,
+ `instance_id` int(5) unsigned ,
+ `name` varchar(255) ,
+ `guild_id` int(5) unsigned zerofill ,
+ `length` int(5) unsigned ,
+ `date` datetime 
+)*/;
+
+/*View structure for view arena_fights_detailed_view */
+
+/*!50001 DROP TABLE IF EXISTS `arena_fights_detailed_view` */;
+/*!50001 DROP VIEW IF EXISTS `arena_fights_detailed_view` */;
+
+/*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`elyrion` SQL SECURITY DEFINER VIEW `arena_fights_detailed_view` AS (select `d`.`fight_guid` AS `fight_guid`,`t`.`type` AS `type`,`c`.`name` AS `nick`,`w`.`name` AS `arena_team_name`,`d`.`team_id` AS `team_id`,`d`.`damage_done` AS `damage_done`,`d`.`healing_done` AS `healing_done`,`d`.`kills` AS `kills`,`d`.`personal_rating` AS `personal_rating`,`d`.`rating_change` AS `rating_change`,`t`.`timestamp` AS `timestamp`,`t`.`length` AS `length` from (((`arena_fights_detailed` `d` join `arena_fights` `t` on((`d`.`fight_guid` = `t`.`fight_guid`))) left join `arena_team` `w` on((`w`.`arenateamid` = `d`.`team_id`))) left join `characters` `c` on((`d`.`player_guid` = `c`.`guid`))) where (`t`.`timestamp` < (sysdate() - interval 12 hour)) order by `t`.`timestamp` desc) */;
+
+/*View structure for view arena_fights_view */
+
+/*!50001 DROP TABLE IF EXISTS `arena_fights_view` */;
+/*!50001 DROP VIEW IF EXISTS `arena_fights_view` */;
+
+/*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`elyrion` SQL SECURITY DEFINER VIEW `arena_fights_view` AS (select `f`.`fight_guid` AS `fight_guid`,`f`.`type` AS `type`,`w`.`name` AS `winners_name`,`f`.`winners_id` AS `winners_id`,`f`.`winners_rating` AS `winners_rating`,`l`.`name` AS `losers_name`,`f`.`losers_id` AS `losers_id`,`f`.`losers_rating` AS `losers_rating`,`f`.`rating_change` AS `rating_change`,`f`.`timestamp` AS `timestamp`,`f`.`length` AS `length` from ((`arena_fights` `f` join `arena_team` `w` on((`f`.`winners_id` = `w`.`arenateamid`))) left join `arena_team` `l` on((`f`.`losers_id` = `l`.`arenateamid`))) where (`f`.`timestamp` < (sysdate() - interval 12 hour)) order by `f`.`timestamp` desc) */;
+
+/*View structure for view boss_fights_detailed_view */
+
+/*!50001 DROP TABLE IF EXISTS `boss_fights_detailed_view` */;
+/*!50001 DROP VIEW IF EXISTS `boss_fights_detailed_view` */;
+
+/*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`elyrion` SQL SECURITY DEFINER VIEW `boss_fights_detailed_view` AS (select `b`.`kill_id` AS `kill_id`,`c`.`name` AS `player_name`,`b`.`player_guid` AS `player_guid`,`b`.`healing` AS `healing`,`b`.`damage` AS `damage`,`b`.`deaths` AS `deaths` from (`boss_fights_detailed` `b` left join `characters` `c` on((`c`.`guid` = `b`.`player_guid`)))) */;
+
+/*View structure for view boss_fights_loot_view */
+
+/*!50001 DROP TABLE IF EXISTS `boss_fights_loot_view` */;
+/*!50001 DROP VIEW IF EXISTS `boss_fights_loot_view` */;
+
+/*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`elyrion` SQL SECURITY DEFINER VIEW `boss_fights_loot_view` AS (select `l`.`kill_id` AS `kill_id`,`l`.`item_id` AS `item_id`,`t`.`name` AS `name`,`l`.`count` AS `count` from (`characters`.`boss_fights_loot` `l` left join `world`.`item_template` `t` on((`t`.`entry` = `l`.`item_id`)))) */;
+
+/*View structure for view boss_fights_view */
+
+/*!50001 DROP TABLE IF EXISTS `boss_fights_view` */;
+/*!50001 DROP VIEW IF EXISTS `boss_fights_view` */;
+
+/*!50001 CREATE ALGORITHM=UNDEFINED DEFINER=`elyrion` SQL SECURITY DEFINER VIEW `boss_fights_view` AS (select `f`.`kill_id` AS `kill_id`,`n`.`boss_name` AS `boss_name`,`f`.`mob_id` AS `mob_id`,`l`.`boss_location` AS `location`,`f`.`instance_id` AS `instance_id`,`g`.`name` AS `name`,`f`.`guild_id` AS `guild_id`,`f`.`length` AS `length`,`f`.`date` AS `date` from (((`boss_fights` `f` join `boss_id_names` `n` on((`f`.`mob_id` = `n`.`boss_id`))) left join `guild` `g` on((`f`.`guild_id` = `g`.`guildid`))) join `boss_id_locations` `l` on((`n`.`boss_id` = `l`.`boss_id`)))) */;
+
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
 /*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
