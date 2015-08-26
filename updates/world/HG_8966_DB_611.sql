@@ -112,7 +112,7 @@ UPDATE `creature_template` SET `speed`='1' WHERE (`entry`='25073');
 
 
 -- quest 9280 urgent   
- Quest 9409 shouldn't be acceptable before doing 1-2 previous( depends on race). 9369 is NON draenei version.
+-- Quest 9409 shouldn't be acceptable before doing 1-2 previous( depends on race). 9369 is NON draenei version.
 UPDATE `quest_template` SET `PrevQuestId`='9280' WHERE (`entry`='9409');
 UPDATE `quest_template` SET `NextQuestId`='9409' WHERE (`entry`='9369');
 UPDATE `quest_template` SET `PrevQuestId`='9409' WHERE (`entry`='9371');
