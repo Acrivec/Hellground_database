@@ -1,0 +1,1 @@
+ALTER TABLE `characters`.`reserved_name` ADD COLUMN `accid` INT UNSIGNED NOT NULL DEFAULT 0 AFTER `name`;
